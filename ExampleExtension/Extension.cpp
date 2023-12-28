@@ -1,4 +1,5 @@
 #include "Extension.h"
+#include <sstream>
 
 BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
@@ -28,25 +29,18 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved
 */
 bool ProcessSentence(std::wstring& sentence, SentenceInfo sentenceInfo)
 {
-	// Your code here...
-#ifdef COPY_CLIPBOARD
-	// This example extension automatically copies sentences from the hook currently selected by the user into the clipboard.
-	if (sentenceInfo["current select"])
-	{
-		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, (sentence.size() + 2) * sizeof(wchar_t));
-		memcpy(GlobalLock(hMem), sentence.c_str(), (sentence.size() + 2) * sizeof(wchar_t));
-		GlobalUnlock(hMem);
-		OpenClipboard(0);
-		EmptyClipboard();
-		SetClipboardData(CF_UNICODETEXT, hMem);
-		CloseClipboard();
-	}
-	return false;
-#endif // COPY_CLIPBOARD
+	std::wstringstream sentence_s(sentence);
+	std::wstring line, prev, out;
+	while (std::getline(sentence_s, line)) {
+		if (!prev.empty() && line.find(prev) != 0) {
+			out += prev + L"\r\n";
+		}
 
-#ifdef EXTRA_NEWLINES
-	// This example extension adds extra newlines to all sentences.
-	sentence += L"\r\n";
+		prev = line;
+	}
+
+	out += prev;
+	sentence = out;
+
 	return true;
-#endif // EXTRA_NEWLINES
 }
