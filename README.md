@@ -1,7 +1,12 @@
-# Example Extension
+# Textractor-RemoveIncrementalChar
 
-Every time Textractor has a sentence of text ready, it will call `ProcessSentence` on all extensions it finds sequentially (via `OnNewSentence`)
-After the sentence has been processed by all extensions, it will be displayed.
+Some game like Ace Attorney make use of incremental text to fabricate conversation-like dialog. This extension change something like this:
+
+![before](before.png)
+
+to this:
+
+![after](after.png)
 
 # SentenceInfo
 
